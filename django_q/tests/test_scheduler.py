@@ -335,6 +335,25 @@ def test_scheduler_atomic_transaction_must_specify_the_database_based_on_router_
         mocked_db.transaction.atomic.assert_called_with(using=broker.connection.db)
 
 
+@override_settings(
+    DATABASE_ROUTERS=MULTIPLE_APPS_DATABASE_ROUTERS, DATABASES=MULTIPLE_APPS_DATABASES
+)
+@pytest.mark.django_db
+def test_scheduler_atomic_transaction_must_specify_a_database_based_on_instance_when_no_orm_is_configured(
+    broker: Broker,
+):
+    """
+    GIVEN a environment with multiple databases and not ORM as broker
+    WHEN the scheduler is called
+    THEN the transaction atomic must be called using the database used to create the schedule entry.
+    """
+    broker = broker
+    with mock.patch("django_q.cluster.db") as mocked_db:
+        scheduler(broker=broker)
+        # Here the database used when creating the schedule should be used!
+        mocked_db.transaction.atomic.assert_called_once_with(using="admin")
+
+
 def test_localtime():
     assert not is_naive(localtime())
 
