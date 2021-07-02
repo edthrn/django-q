@@ -25,7 +25,7 @@ class TestingMultipleAppsDatabaseRouter:
 
     @staticmethod
     def is_admin(model):
-        return model._meta.app_label in ["admin"]
+        return model.__name__ == "Schedule"
 
     def db_for_read(self, model, **hints):
         if self.is_admin(model):
