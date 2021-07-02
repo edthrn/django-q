@@ -15,7 +15,7 @@ RUN pip install --upgrade pip
 
 # Poetry project setup for development
 # Copies poetry requirements files
-COPY --chown=docker Dockerfile.dev requirements.txt* setup.py* ./
+COPY --chown=docker Dockerfile.dev requirements.txt* ./
 
 RUN pip install -r requirements.txt
 
@@ -34,7 +34,7 @@ ENV PATH="/home/docker/.local/bin:${PATH}"
 # Copy in as non-root user, so permissions match what we need
 COPY --chown=docker:docker . .
 
-RUN python setup.py develop
+RUN poetry install -E testing
 
 # Applies the container user to be non-root
 USER docker
